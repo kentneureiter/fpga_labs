@@ -32,8 +32,8 @@ module SevenSeg(
     wire cout;
     
     
-    CLAA uut1(.A(A), .B(B), .Cin(1'b0),.s(s),.cout(cout));
-    BCD uut2(.bcd(bcd), .seg(seg));
+    CLAA uut1(.A(A), .B(B), .Cin(1'b0),.s(sum),.cout(cout));
+    BCD uut2(.bcd(bcd_mux_out), .seg(seg));
     MuxTwo uut3 (.A(sum), .B(A), .sel(s), .mux_out(bcd_mux_out));
     
     assign an = 4'b1110;
