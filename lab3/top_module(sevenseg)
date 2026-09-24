@@ -1,0 +1,41 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/18/2026 02:55:27 PM
+// Design Name: 
+// Module Name: SevenSeg
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module SevenSeg(
+    input [3:0] A,
+    input [3:0] B,
+    input s,
+    output [6:0] seg,
+    output [3:0] an
+    );
+    wire [3:0] bcd_mux_out;
+    wire [3:0] sum;
+    wire cout;
+    
+    
+    CLAA uut1(.A(A), .B(B), .Cin(1'b0),.s(s),.cout(cout));
+    BCD uut2(.bcd(bcd), .seg(seg));
+    MuxTwo uut3 (.A(sum), .B(A), .sel(s), .mux_out(bcd_mux_out));
+    
+    assign an = 4'b1110;
+    
+endmodule
