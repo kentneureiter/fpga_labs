@@ -1,0 +1,33 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/18/2026 03:48:20 PM
+// Design Name: 
+// Module Name: MuxTwo
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module MuxTwo(
+    input[3:0] A,B,
+    //input s,
+    input sel,
+    //input [2:0] i,
+    output[3:0] mux_out
+    //output y
+    );
+    
+    assign mux_out = sel?B:A;
+endmodule
