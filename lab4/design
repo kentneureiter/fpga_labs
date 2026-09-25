@@ -42,7 +42,7 @@ module vehicle(
     output seat_warn,
     output door_warn,
     output hood_warn,
-    output trunk_warm,
+    output trunk_warn,
     output bat_warn,
     output airbag_warn,
     output temp_warn
