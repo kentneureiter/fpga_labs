@@ -1,0 +1,59 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/25/2026 03:13:50 PM
+// Design Name: 
+// Module Name: vehicle_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module vehicle_tb;
+    reg sb;
+    reg door;
+    reg key;
+    reg brk;
+    reg park;
+    reg hood;
+    reg bat_ok;
+    reg aib_ok;
+    reg tmp_ok;
+    reg pass_occ;
+    reg sb_p;
+    reg trunk;
+    reg pbrk;
+    reg srv;
+    wire start_permit;
+    wire chime;
+    wire warn_pri2;
+    wire warn_pri1;
+    wire seat_warn;
+    wire door_warn;
+    wire hood_warn;
+    wire trunk_warm;
+    wire bat_warn;
+    wire airbag_warn;
+    wire temp_warn;
+    
+    vehicle utt (.sb(sb), .door(door), .key(key), .brk(brk), .park(parl), .hood(hood), .bat_ok(bat_ok), .aib_ok(aib_ok), 
+    .tmp_ok(tmp_ok), .pass_occ(pass_occ), .sb_p(sb_p), .trunk(trunk), .pbrk(pbrk), .srv(srv), .start_permit(start_permit), .chime(chime), .warn_pri2(warn_pri2),
+    .warn_pri1(warn_pri1), .seat_warn(seat_warn), .door_warn(door_warn), .hood_warn(hood_warn), .trunk_warn(trunk_warn), .bat_warn(bat_warn), .airbag_warn(airbag_warn), .temp_warn(temp_warn));
+    
+    initial begin
+             
+        #10 =10'b0000000000000000;
+        sb = 1'b0, key = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0,
+        
+endmodule
