@@ -1,0 +1,151 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/25/2026 02:52:24 PM
+// Design Name: 
+// Module Name: vehicle
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module vehicle(
+    input sb,
+    input door,
+    input key,
+    input brk,
+    input park,
+    input hood,
+    input bat_ok,
+    input aib_ok,
+    input tmp_ok,
+    input pass_occ,
+    input sb_p,
+    input trunk,
+    input pbrk,
+    input srv,
+    output start_permit,
+    output chime,
+    output warn_pri2,
+    output warn_pri1,
+    output seat_warn,
+    output door_warn,
+    output hood_warn,
+    output trunk_warm,
+    output bat_warn,
+    output airbag_warn,
+    output temp_warn
+    );
+    
+       // start_permit: rows 3
+    assign start_permit = (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv);   // row 3
+
+    // chime: rows 4, 5, 6, 7, 8, 9, 10, 11, 12, 27, 28, 29, 30, 31, 32, 33, 42, 43, 44, 45, 46, 47
+    assign chime = (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 4
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 5
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 6
+        (sb & ~door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 7
+        (sb & door & key & brk & park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 8
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & ~trunk & ~pbrk & ~srv) |   // row 9
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 10
+        (sb & door & key & brk & park & hood & bat_ok & ~aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 11
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 12
+        (sb & ~door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 27
+        (sb & door & key & brk & ~park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 28
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 29
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 30
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & ~srv) |   // row 31
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & pbrk & ~srv) |   // row 32
+        (sb & door & ~key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 33
+        (sb & ~door & key & brk & ~park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 42
+        (sb & door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 43
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 44
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 45
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 46
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & ~srv);   // row 47
+
+    // warn_pri2: rows 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
+    assign warn_pri2 =
+        (sb & ~door & key & brk & ~park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 42
+        (sb & door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 43
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 44
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 45
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 46
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & ~srv) |   // row 47
+        (sb & ~door & key & brk & ~park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 48
+        (sb & door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 49
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 50
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 51
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & srv) |   // row 52
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & srv);   // row 53
+
+    // warn_pri1: rows 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+    assign warn_pri1 =
+        (sb & ~door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 27
+        (sb & door & key & brk & ~park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 28
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 29
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 30
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & ~srv) |   // row 31
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & pbrk & ~srv) |   // row 32
+        (sb & door & ~key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 33
+        (sb & ~door & key & brk & ~park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 34
+        (sb & door & key & brk & ~park & ~hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 35
+        (sb & door & key & brk & park & ~hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 36
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & srv) |   // row 37
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & ~sb_p & ~trunk & ~pbrk & srv) |   // row 38
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & pbrk & srv) |   // row 39
+        (sb & door & ~key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 40
+
+    // seat_warn: rows 4, 5, 6, 14, 15, 16
+    assign seat_warn =
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 4
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 5
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & ~srv) |   // row 6
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & srv) |   // row 14
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv) |   // row 15
+        (~sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & ~sb_p & trunk & ~pbrk & srv);   // row 16
+
+    // door_warn: rows 7, 17
+    assign door_warn =
+        (sb & ~door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 7
+        (sb & ~door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 17
+
+    // hood_warn: rows 8, 18
+    assign hood_warn =
+        (sb & door & key & brk & park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 8
+        (sb & door & key & brk & park & ~hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 18
+
+    // trunk_warn: rows 9, 19
+    assign trunk_warn =
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & ~trunk & ~pbrk & ~srv) |   // row 9
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & ~trunk & ~pbrk & srv);   // row 19
+
+    // bat_warn: rows 10, 20
+    assign bat_warn =
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 10
+        (sb & door & key & brk & park & hood & ~bat_ok & aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 20
+
+    // airbag_warn: rows 11, 21
+    assign airbag_warn =
+        (sb & door & key & brk & park & hood & bat_ok & ~aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 11
+        (sb & door & key & brk & park & hood & bat_ok & ~aib_ok & tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 21
+
+    // temp_warn: rows 12, 22
+    assign temp_warn =
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & ~srv) |   // row 12
+        (sb & door & key & brk & park & hood & bat_ok & aib_ok & ~tmp_ok & pass_occ & sb_p & trunk & ~pbrk & srv);   // row 22
+
+
+
+endmodule
