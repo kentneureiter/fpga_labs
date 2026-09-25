@@ -42,18 +42,34 @@ module vehicle_tb;
     wire seat_warn;
     wire door_warn;
     wire hood_warn;
-    wire trunk_warm;
+    wire trunk_warn;
     wire bat_warn;
     wire airbag_warn;
     wire temp_warn;
     
-    vehicle utt (.sb(sb), .door(door), .key(key), .brk(brk), .park(parl), .hood(hood), .bat_ok(bat_ok), .aib_ok(aib_ok), 
+    vehicle uut (.sb(sb), .door(door), .key(key), .brk(brk), .park(park), .hood(hood), .bat_ok(bat_ok), .aib_ok(aib_ok), 
     .tmp_ok(tmp_ok), .pass_occ(pass_occ), .sb_p(sb_p), .trunk(trunk), .pbrk(pbrk), .srv(srv), .start_permit(start_permit), .chime(chime), .warn_pri2(warn_pri2),
     .warn_pri1(warn_pri1), .seat_warn(seat_warn), .door_warn(door_warn), .hood_warn(hood_warn), .trunk_warn(trunk_warn), .bat_warn(bat_warn), .airbag_warn(airbag_warn), .temp_warn(temp_warn));
     
     initial begin
              
-        #10 =10'b0000000000000000;
-        sb = 1'b0, key = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0, hood = 1'b0,
-        
+        sb     = 1;  door     = 1;  key   = 1;  brk  = 1;  park = 1;  hood = 1;
+        bat_ok = 1;  aib_ok   = 1;  tmp_ok = 1;
+        pass_occ = 1;  sb_p = 1;  trunk = 1;  pbrk = 0;  srv = 0;
+        #10;
+ 
+        sb = 0;     #10;  sb = 1;
+        door = 0;   #10;  door = 1;
+        hood = 0;   #10;  hood = 1;
+        trunk = 0;  #10;  trunk = 1;
+        bat_ok = 0; #10;  bat_ok = 1;
+        aib_ok = 0; #10;  aib_ok = 1;
+        tmp_ok = 0; #10;  tmp_ok = 1;
+        srv = 1;  door = 0;  #10;  srv = 0;  door = 1;
+        pbrk = 1;             #10;  pbrk = 0;
+        door = 0;  park = 0;  #10;  door= 1;  park = 1;
+ 
+        #10;
+        $finish;
+        end
 endmodule
