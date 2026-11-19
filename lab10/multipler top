@@ -1,0 +1,33 @@
+module Multiplier_top(
+    input        clk,
+    input        reset,       // BTNC
+    input  [2:0] addr1_ROM,   // SW[2:0]
+    input  [2:0] addr2_ROM,   // SW[5:3]
+    input  [2:0] addr_RAM,    // SW[8:6]
+    output [7:0] result,      // LED[7:0]
+    output [2:0] state        // LED[14:12]
+);
+    wire [2:0] rom_adr;
+    wire [3:0] rom_data;
+    wire       w_rf, DA, SA, SB, w_ram;
+    wire [3:0] A, B;
+    wire [7:0] product;
+
+    cu u_cu (
+        .clk(clk), .reset(reset),
+        .adr1(addr1_ROM), .adr2(addr2_ROM),
+        .w_rf(w_rf), .adr(rom_adr), .DA(DA), .SA(SA), .SB(SB),
+        .st_out(state), .w_ram(w_ram)
+    );
+
+    ROM u_rom (.clk(clk), .re(1'b1), .addr(rom_adr), .data_out(rom_data));
+
+    RF u_rf (.A(A), .B(B), .SA(SA), .SB(SB), .D(rom_data), .DA(DA),
+             .W(w_rf), .rst(reset), .clk(clk));
+
+    comb_multiplier u_mult (.A(A), .B(B), .i_write_data(product));
+
+    RAM u_ram (.i_clk(clk), .i_rst(reset), .i_addr(addr_RAM),
+               .i_write_data(product), .i_write_en(w_ram),
+               .o_read_data(result));
+endmodule
