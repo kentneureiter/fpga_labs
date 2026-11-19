@@ -1,0 +1,118 @@
+4-bit FSM-Controlled Multiplier (Basys 3)
+
+A Verilog design for the Basys 3 FPGA. It reads two 4-bit operands from a ROM, loads them into a 2-register register file, multiplies them with a combinational array multiplier, and stores the 8-bit product in RAM. A finite-state machine (the control unit) sequences each step.
+
+Built in Xilinx Vivado for ECE 128 (FPGA Design).
+
+Block Diagram
+           SW[2:0] (addr1)   SW[5:3] (addr2)
+                 │                 │
+                 ▼                 ▼
+          ┌─────────────────────────────┐
+  clk ───►│        Control Unit (cu)    │───► state → LED[14:12]
+ BTNC ───►│            FSM              │
+          └──┬──────┬─────┬─────┬───────┘
+         adr │ w_rf │DA/SA/SB   │ w_ram
+             ▼      ▼     ▼     │
+          ┌─────┐  ┌──────────┐ │
+          │ ROM │─►│ Register │ │
+          │ 8x4 │  │ File(RF) │ │
+          └─────┘  │ R0 , R1  │ │
+                   └──┬────┬──┘ │
+                     A│    │B   │
+                      ▼    ▼    │
+                 ┌──────────────┐│
+                 │comb_multiplier│
+                 │   4x4 → 8    ││
+                 └──────┬───────┘│
+                 product│        │
+                        ▼        ▼
+                   ┌──────────────┐
+  SW[8:6] ────────►│  RAM  8x8    │───► result → LED[7:0]
+  (addr_RAM)       └──────────────┘
+Modules
+Module	File	Description
+Multiplier_top	Multiplier_top.v	Top level. Wires all submodules together and maps them to Basys 3 I/O.
+cu	cu.v	Control unit FSM. Generates ROM address, register-file controls, and RAM write enable.
+ROM	ROM.v	8 × 4-bit synchronous ROM, initialized from ram_data.mem with $readmemb.
+RF	RF.v	Register file with two 4-bit registers (R0, R1), one write port and two read ports (A, B).
+Decoder1to2	Decoder1to2.v	Converts the destination address DA and write enable W into per-register load enables.
+RegisterNbit	RegisterNbit.v	Parameterized N-bit register with load enable and asynchronous reset.
+Mux2to1Nbit	Mux2to1Nbit.v	4-bit 2:1 mux that selects which register drives bus A or B.
+comb_multiplier	comb_multiplier.v	4 × 4 combinational shift-and-add multiplier (sums 4 partial products).
+RAM	RAM.v	8 × 8-bit synchronous RAM. Writes when i_write_en is high, otherwise reads.
+tb_Multiplier_top	tb_Multiplier_top.v	Testbench that runs 5 multiplication cases.
+Control Unit FSM
+State	Code	Action
+S0_idle	0	ROM address = addr1. No writes.
+S1_send_adr1	1	Write ROM[addr1] into R0 (DA=0, w_rf=1). Switch ROM address to addr2.
+S2_send_adr2	2	Write ROM[addr2] into R1 (DA=1, w_rf=1).
+S3_multiply	3	Registers hold A and B. The multiplier computes the product combinationally.
+S4_write_ram	4	Write the product to RAM[addr_RAM] (w_ram=1).
+S5_read_ram	5	Stop writing. RAM drives the stored value to result. Return to S0_idle.
+
+Flow: S0 → S1 → S2 → S3 → S4 → S5 → S0 (repeats continuously while reset is low).
+
+The ROM is synchronous, so its data arrives one clock after the address. That is why the address for operand 2 is set in S1, one state before it is written into R1 in S2.
+
+Basys 3 I/O Mapping
+Signal	Width	Basys 3	Purpose
+clk	1	100 MHz oscillator (W5)	System clock
+reset	1	BTNC	Asynchronous reset (FSM, registers) / sync clear (RAM)
+addr1_ROM	3	SW[2:0]	ROM address of operand A
+addr2_ROM	3	SW[5:3]	ROM address of operand B
+addr_RAM	3	SW[8:6]	RAM address to write to and read from
+result	8	LED[7:0]	Product read back from RAM
+state	3	LED[14:12]	FSM status output
+ROM Contents (ram_data.mem)
+Address	Binary	Decimal
+0	0000	0
+1	1100	12
+2	0110	6
+3	0111	7
+4	1000	8
+5	0001	1
+6	1101	13
+7	1110	14
+Test Cases (Testbench)
+Case	addr1	addr2	addr_RAM	Operation	Expected Result
+1	1	2	0	12 × 6	72
+2	7	7	1	14 × 14	196
+3	0	6	2	0 × 13	0
+4	3	5	3	7 × 1	7
+5	4	6	4	8 × 13	104
+
+Each case runs for 140 ns (14 clock cycles at 100 MHz), which is long enough for at least two full passes through the FSM. The testbench also prints state, the addresses and result to the Tcl console with $monitor.
+
+How to Run (Vivado)
+Create a project targeting the Basys 3 (xc7a35tcpg236-1).
+Add design sources: all module .v files.
+Add the memory file: add ram_data.mem as a design source (or simulation source) so $readmemb can find it.
+Add simulation source: tb_Multiplier_top.v, and set it as the simulation top.
+Simulate: Run Simulation → Run Behavioral Simulation. Check that result matches the expected values above.
+Add constraints: add a .xdc file that maps the ports to the pins in the I/O table.
+Synthesize → Implement → Generate Bitstream, then program the board with Hardware Manager.
+On the board
+Press BTNC to reset.
+Set SW[2:0] and SW[5:3] to pick the two ROM operands.
+Set SW[8:6] to pick the RAM slot.
+Read the product in binary on LED[7:0].
+Repository Structure
+.
+├── src/
+│   ├── Multiplier_top.v
+│   ├── cu.v
+│   ├── ROM.v
+│   ├── RF.v
+│   ├── Decoder1to2.v
+│   ├── RegisterNbit.v
+│   ├── Mux2to1Nbit.v
+│   ├── comb_multiplier.v
+│   └── RAM.v
+├── sim/
+│   └── tb_Multiplier_top.v
+├── mem/
+│   └── ram_data.mem
+├── constraints/
+│   └── Basys3.xdc
+└── README.md
