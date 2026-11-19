@@ -1,0 +1,41 @@
+`timescale 1ns / 1ps
+module tb_Multiplier_top;
+    reg        clk, reset;
+    reg  [2:0] addr1_ROM, addr2_ROM, addr_RAM;
+    wire [7:0] result;
+    wire [2:0] state;
+
+    Multiplier_top uut (.clk(clk), .reset(reset),
+        .addr1_ROM(addr1_ROM), .addr2_ROM(addr2_ROM), .addr_RAM(addr_RAM),
+        .result(result), .state(state));
+
+    // 100 MHz clock, same as Basys3
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    initial begin
+        reset = 1; addr1_ROM = 0; addr2_ROM = 0; addr_RAM = 0;
+        #22 reset = 0;
+
+        // Case 1: ROM[1]=12 x ROM[2]=6  = 72  -> RAM[0]
+        addr1_ROM = 3'd1; addr2_ROM = 3'd2; addr_RAM = 3'd0;
+        #140;
+        // Case 2: ROM[7]=14 x ROM[7]=14 = 196 -> RAM[1]
+        addr1_ROM = 3'd7; addr2_ROM = 3'd7; addr_RAM = 3'd1;
+        #140;
+        // Case 3: ROM[0]=0 x ROM[6]=13  = 0   -> RAM[2]
+        addr1_ROM = 3'd0; addr2_ROM = 3'd6; addr_RAM = 3'd2;
+        #140;
+        // Case 4: ROM[3]=7 x ROM[5]=1   = 7   -> RAM[3]
+        addr1_ROM = 3'd3; addr2_ROM = 3'd5; addr_RAM = 3'd3;
+        #140;
+        // Case 5: ROM[4]=8 x ROM[6]=13  = 104 -> RAM[4]
+        addr1_ROM = 3'd4; addr2_ROM = 3'd6; addr_RAM = 3'd4;
+        #140;
+        $finish;
+    end
+
+    // optional: lets you check values in the Tcl console without reading the waveform
+    initial $monitor("%0t ns  state=%0d  addr1=%0d addr2=%0d ram=%0d  result=%0d",
+                     $time, state, addr1_ROM, addr2_ROM, addr_RAM, result);
+endmodule
